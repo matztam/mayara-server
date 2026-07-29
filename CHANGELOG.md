@@ -5,214 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [3.7.0-xhd.1] - 2026-07-28
 
-### Fixed
+### #21
 
-- **raymarine:** support RD418D radomes (discovery and decoding) (#465) ([PR #465](https://github.com/MarineYachtRadar/mayara-server/pull/465))
-- add cmake to docker build tools (#469) ([PR #469](https://github.com/MarineYachtRadar/mayara-server/pull/469))
-- **raymarine:** support RD418HD radomes (discovery and decoding) (#470) ([PR #470](https://github.com/MarineYachtRadar/mayara-server/pull/470))
-
-## [3.7.0] - 2026-07-20
+- Garmin HD and xHD support
 
 ### Added
 
-- **raymarine:** wake, control and power radars behind an Axiom (#427) ([PR #427](https://github.com/MarineYachtRadar/mayara-server/pull/427))
-- **radar:** show powered-off radars as off when they go silent (#455) ([PR #455](https://github.com/MarineYachtRadar/mayara-server/pull/455))
-
-### Changed
-
-- **target:** reduce ARPA CPU usage ~3.5x (#444) ([PR #444](https://github.com/MarineYachtRadar/mayara-server/pull/444))
-
-### Fixed
-
-- **raymarine:** surface discovered radars so an asleep Quantum is visible (#422) ([PR #422](https://github.com/MarineYachtRadar/mayara-server/pull/422))
-- **raymarine:** correct Quantum model names for E70210 and E70344 (#420) ([PR #420](https://github.com/MarineYachtRadar/mayara-server/pull/420))
-- **gui:** stabilize north-up to true north via per-spoke bearing (#429) ([PR #429](https://github.com/MarineYachtRadar/mayara-server/pull/429))
-- **clippy:** resolve new lints from Rust 1.97 clippy (#437) ([PR #437](https://github.com/MarineYachtRadar/mayara-server/pull/437))
-- **clippy:** clean up 79 warnings from clippy 1.97 (#438) ([PR #438](https://github.com/MarineYachtRadar/mayara-server/pull/438))
-- **target:** bound blob detector memory for never-completing blobs (#435) ([PR #435](https://github.com/MarineYachtRadar/mayara-server/pull/435))
-- **navico:** clean and disambiguate radar names (#451) ([PR #451](https://github.com/MarineYachtRadar/mayara-server/pull/451))
-- **locator:** survive UDP recv errors on Windows (#449) ([PR #449](https://github.com/MarineYachtRadar/mayara-server/pull/449))
-- **radar:** key by IP when serial number is empty (#448) ([PR #448](https://github.com/MarineYachtRadar/mayara-server/pull/448))
-- **navico:** correct Doppler-mode colour palette (#456) ([PR #456](https://github.com/MarineYachtRadar/mayara-server/pull/456))
-- **trail:** correct target-trail colours (#457) ([PR #457](https://github.com/MarineYachtRadar/mayara-server/pull/457))
-
-## [3.6.0] - 2026-06-19
-
-### Added
-
-- **raymarine:** send WiFi wake nudge to idle Quantum radars (#341) ([PR #341](https://github.com/MarineYachtRadar/mayara-server/pull/341))
-- **gui:** add Network Diagnostics download button (#352) ([PR #352](https://github.com/MarineYachtRadar/mayara-server/pull/352))
-- **navico:** surface radar errors and a Fault power state (#346) ([PR #346](https://github.com/MarineYachtRadar/mayara-server/pull/346))
-- **gui:** show radar notifications and a fault power state (#347) ([PR #347](https://github.com/MarineYachtRadar/mayara-server/pull/347))
-- **raymarine:** surface Quantum self-test faults and decode per-item results (#385) ([PR #385](https://github.com/MarineYachtRadar/mayara-server/pull/385))
-- **garmin:** send CDM V2 heartbeat to wake Fantom radars (#156) (#267) ([PR #267](https://github.com/MarineYachtRadar/mayara-server/pull/267))
-- **web:** add --no-websocket-compression flag (#393) ([PR #393](https://github.com/MarineYachtRadar/mayara-server/pull/393))
-- **replay:** add --pcap-max-time flag (#395) ([PR #395](https://github.com/MarineYachtRadar/mayara-server/pull/395))
-- **client-examples:** add --duration load-driver mode to spoke_viewer (#396) ([PR #396](https://github.com/MarineYachtRadar/mayara-server/pull/396))
-
-### Changed
-
-- **agents:** require user-facing description first in issues and PRs (#373) ([PR #373](https://github.com/MarineYachtRadar/mayara-server/pull/373))
-- drop magic numbers when sending Power control values (#377) ([PR #377](https://github.com/MarineYachtRadar/mayara-server/pull/377))
-- consolidate NM and knot conversion constants (#381) ([PR #381](https://github.com/MarineYachtRadar/mayara-server/pull/381))
-- **radar:** pre-size serialization buffer for spoke broadcasts (#394) ([PR #394](https://github.com/MarineYachtRadar/mayara-server/pull/394))
-- **web:** tune permessage-deflate for radar streams (#398) ([PR #398](https://github.com/MarineYachtRadar/mayara-server/pull/398))
-- **radar:** broadcast serialized spokes as Bytes, not Vec<u8> (#399) ([PR #399](https://github.com/MarineYachtRadar/mayara-server/pull/399))
-- **radar:** coalesce spokes into ~1/32-revolution batches (#400) ([PR #400](https://github.com/MarineYachtRadar/mayara-server/pull/400))
-- correct and expand the server description (#339) ([PR #339](https://github.com/MarineYachtRadar/mayara-server/pull/339))
-- **internals:** document radar status model (#410) ([PR #410](https://github.com/MarineYachtRadar/mayara-server/pull/410))
-
-### Fixed
-
-- **raymarine:** decode Quantum self-test fault status (#335) ([PR #335](https://github.com/MarineYachtRadar/mayara-server/pull/335))
-- **raymarine:** correct Quantum interference-rejection byte and gain-value id (#337) ([PR #337](https://github.com/MarineYachtRadar/mayara-server/pull/337))
-- **clippy:** make  warning-clean and gate it in CI + pre-commit (#358) ([PR #358](https://github.com/MarineYachtRadar/mayara-server/pull/358))
-- **settings:** parse_path: split on `.controls.`, route to the right radar (#367) ([PR #367](https://github.com/MarineYachtRadar/mayara-server/pull/367))
-- **raymarine:** bound-check Quantum frame and RLE markers (#369) ([PR #369](https://github.com/MarineYachtRadar/mayara-server/pull/369))
-- **settings:** resolve enum labels by HashMap key, not iteration index (#371) ([PR #371](https://github.com/MarineYachtRadar/mayara-server/pull/371))
-- **stream:** keep throttle deadline when dropping a too-soon update (#375) ([PR #375](https://github.com/MarineYachtRadar/mayara-server/pull/375))
-- **raymarine:** do not draw targets in doppler color when doppler is off (#379) ([PR #379](https://github.com/MarineYachtRadar/mayara-server/pull/379))
-- **raymarine:** Add support for Quantum via WiFi (#348) ([PR #348](https://github.com/MarineYachtRadar/mayara-server/pull/348))
-- **docker:** make docker/Dockerfile actually build (#391) ([PR #391](https://github.com/MarineYachtRadar/mayara-server/pull/391))
-- **navdata:** keep own ship out of the AIS overlay (#408) ([PR #408](https://github.com/MarineYachtRadar/mayara-server/pull/408))
-
-## [3.5.4] - 2026-06-02
-
-### Added
-
-- **gui:** gray out AIS toggle when no heading source is available (#297) ([PR #297](https://github.com/MarineYachtRadar/mayara-server/pull/297))
-- **gui:** support magnetic heading with true/magnetic readout toggle (#315) ([PR #315](https://github.com/MarineYachtRadar/mayara-server/pull/315))
-- surface upstream nav/token/AIS status in the radar GUI (#326) ([PR #326](https://github.com/MarineYachtRadar/mayara-server/pull/326))
-- **docker:** add container healthcheck probing /signalk (#329) ([PR #329](https://github.com/MarineYachtRadar/mayara-server/pull/329))
-
-### Changed
-
-- **enduser:** explain heading requirement for AIS/ARPA overlays (#302) ([PR #302](https://github.com/MarineYachtRadar/mayara-server/pull/302))
-- **internals:** add radar_pi comparison guide for C++ developers (#266) ([PR #266](https://github.com/MarineYachtRadar/mayara-server/pull/266))
-- **building:** update feature list to match Cargo.toml (#307) ([PR #307](https://github.com/MarineYachtRadar/mayara-server/pull/307))
-- **logging:** drop env_logger regex feature (#305) ([PR #305](https://github.com/MarineYachtRadar/mayara-server/pull/305))
-- fix incorrect GitHub URLs in ENDUSER and BUILDING (#306) ([PR #306](https://github.com/MarineYachtRadar/mayara-server/pull/306))
-- **radar:** make the idle-decode gate brand-agnostic (#321) ([PR #321](https://github.com/MarineYachtRadar/mayara-server/pull/321))
-
-### Fixed
-
-- **ci:** force-switch to main when committing the regenerated CHANGELOG (#280) ([PR #280](https://github.com/MarineYachtRadar/mayara-server/pull/280))
-- **furuno:** detect dead control socket so first PUT after idle succeeds (#282) ([PR #282](https://github.com/MarineYachtRadar/mayara-server/pull/282))
-- **furuno:** skip spoke decode in idle mode to free ~1.5 cores at idle (#284) ([PR #284](https://github.com/MarineYachtRadar/mayara-server/pull/284))
-- **navdata:** exponential backoff on Signal K reconnect when no own-ship nav (#285) ([PR #285](https://github.com/MarineYachtRadar/mayara-server/pull/285))
-- **arpa:** tracker, IMM, CPA and dedup improvements per design plan (#275) ([PR #275](https://github.com/MarineYachtRadar/mayara-server/pull/275))
-- **gui:** plot AIS using radar heading when SignalK true heading absent (#296) ([PR #296](https://github.com/MarineYachtRadar/mayara-server/pull/296))
-- **gui:** plot ARPA targets using radar heading when true heading absent (#298) ([PR #298](https://github.com/MarineYachtRadar/mayara-server/pull/298))
-- **gui:** show own-ship nav and heading UI without a heading subscription (#313) ([PR #313](https://github.com/MarineYachtRadar/mayara-server/pull/313))
-- **gui:** hide ON-TIME/TX-TIME when the radar does not report them (#316) ([PR #316](https://github.com/MarineYachtRadar/mayara-server/pull/316))
-
-## [3.5.3] - 2026-05-29
-
-### Added
-
-- **gui:** show active renderer (webgpu/webgl) in the controls header (#252) ([PR #252](https://github.com/MarineYachtRadar/mayara-server/pull/252))
-- **arpa:** emit Signal K notifications for guard-zone target acquisition (#260) ([PR #260](https://github.com/MarineYachtRadar/mayara-server/pull/260))
-
-### Changed
-
-- **agents:** note the GUI must use relative API/WS base paths (#272) ([PR #272](https://github.com/MarineYachtRadar/mayara-server/pull/272))
-
-### Fixed
-
-- **gui:** keep PPI sized to the visible viewport on mobile (#249) ([PR #249](https://github.com/MarineYachtRadar/mayara-server/pull/249))
-- **gui:** exponential backoff for heading and AIS reconnects (#254) ([PR #254](https://github.com/MarineYachtRadar/mayara-server/pull/254))
-- **signalk:** skip upstream servers that accept then go silent (#256) ([PR #256](https://github.com/MarineYachtRadar/mayara-server/pull/256))
-- **signalk:** require own-ship navigation before trusting an upstream (#258) ([PR #258](https://github.com/MarineYachtRadar/mayara-server/pull/258))
-- **signalk:** match notifications.* in subscription filter (#262) ([PR #262](https://github.com/MarineYachtRadar/mayara-server/pull/262))
-- **web:** respect X-Forwarded-Proto and Host port for advertised WS URLs (#264) ([PR #264](https://github.com/MarineYachtRadar/mayara-server/pull/264))
-- **gui:** don't reset canvas bitmap on transform-only redraws (#268) ([PR #268](https://github.com/MarineYachtRadar/mayara-server/pull/268))
-- **gui:** address API and WebSocket URLs relative to the GUI mount (#270) ([PR #270](https://github.com/MarineYachtRadar/mayara-server/pull/270))
-
-## [3.5.2] - 2026-05-25
-
-### Added
-
-- **gui:** subscribe AIS overlay to Signal K vessels.* directly (#211) ([PR #211](https://github.com/MarineYachtRadar/mayara-server/pull/211))
-- **signalk:** support bearer-token auth for upstream Signal K (#227) ([PR #227](https://github.com/MarineYachtRadar/mayara-server/pull/227))
-- **gui:** add VRM/EBL markers with two-color drag interaction (#239) ([PR #239](https://github.com/MarineYachtRadar/mayara-server/pull/239))
-- **furuno:** draw oversampled spoke samples past the outer range ring (#241) ([PR #241](https://github.com/MarineYachtRadar/mayara-server/pull/241))
-
-### Changed
-
-- **furuno:** correct DRS to DRS2D in supported radars list (#204) ([PR #204](https://github.com/MarineYachtRadar/mayara-server/pull/204))
-- add capturing-traffic guide and cross-links (#230) ([PR #230](https://github.com/MarineYachtRadar/mayara-server/pull/230))
-- document --signalk-token / --signalk-token-file (#235) ([PR #235](https://github.com/MarineYachtRadar/mayara-server/pull/235))
-
-### Fixed
-
-- **furuno:** skip set_value for unsupported controls (#190) ([PR #190](https://github.com/MarineYachtRadar/mayara-server/pull/190))
-- **recordings:** clean up orphaned .upload files at startup (#192) ([PR #192](https://github.com/MarineYachtRadar/mayara-server/pull/192))
-- **gui:** inscribe PPI in canvas so full range is visible (#200) ([PR #200](https://github.com/MarineYachtRadar/mayara-server/pull/200))
-- **furuno:** clamp spoke alignment overshoot on last sweep (#202) ([PR #202](https://github.com/MarineYachtRadar/mayara-server/pull/202))
-- **gui:** keep guard-zone buttons inside the card on narrow panels (#212) ([PR #212](https://github.com/MarineYachtRadar/mayara-server/pull/212))
-- **deps:** migrate to tokio-graceful-shutdown 0.19 closure API (#215) ([PR #215](https://github.com/MarineYachtRadar/mayara-server/pull/215))
-- **deps:** use system-configuration's core-foundation re-export (#218) ([PR #218](https://github.com/MarineYachtRadar/mayara-server/pull/218))
-- **macos:** handle Option return from SCDynamicStoreBuilder::build (#221) ([PR #221](https://github.com/MarineYachtRadar/mayara-server/pull/221))
-- **raymarine:** prime command_sender at discovery so Quantum wired wakes without an MFD (#232) ([PR #232](https://github.com/MarineYachtRadar/mayara-server/pull/232))
-- **web:** send Cache-Control: no-cache on embedded GUI assets (#237) ([PR #237](https://github.com/MarineYachtRadar/mayara-server/pull/237))
-- **gui:** round VRM/EBL distance readout to navigator-useful precision (#243) ([PR #243](https://github.com/MarineYachtRadar/mayara-server/pull/243))
-
-## [3.5.0] - 2026-05-09
-
-### Added
-
-- **furuno:** add anti-jamming filter control (0xE8) (#102) ([PR #102](https://github.com/MarineYachtRadar/mayara-server/pull/102))
-- **replay:** pcap replay infrastructure for all radar brands (#99) ([PR #99](https://github.com/MarineYachtRadar/mayara-server/pull/99))
-- **furuno:** 252-level palette, Tile echo decoder, and EchoFormat control (#108) ([PR #108](https://github.com/MarineYachtRadar/mayara-server/pull/108))
-- **navico:** scanner type identification, capability bitmasks, and deferred radar visibility (#116) ([PR #116](https://github.com/MarineYachtRadar/mayara-server/pull/116))
-- **navdata:** seed --static-position for real radars (#119) ([PR #119](https://github.com/MarineYachtRadar/mayara-server/pull/119))
-- **furuno:** wire 3-band Target Analyzer Doppler format into wire_to_legend (#131) ([PR #131](https://github.com/MarineYachtRadar/mayara-server/pull/131))
-- **furuno:** add NND file replay support (#133) ([PR #133](https://github.com/MarineYachtRadar/mayara-server/pull/133))
-- **koden:** add Koden RADARpc radar support (#134) ([PR #134](https://github.com/MarineYachtRadar/mayara-server/pull/134))
-- **navdata:** add Signal K discovery protocol and WebSocket transport (#43) ([PR #43](https://github.com/MarineYachtRadar/mayara-server/pull/43))
-- **recording:** faithful playback with source brand identity (#168) ([PR #168](https://github.com/MarineYachtRadar/mayara-server/pull/168))
-
-### Changed
-
-- **furuno:** add FAR radar setup guide (#85) ([PR #85](https://github.com/MarineYachtRadar/mayara-server/pull/85))
-- **contributing:** add workflow guide, CodeRabbit config, scoped changelog (#95) ([PR #95](https://github.com/MarineYachtRadar/mayara-server/pull/95))
-- add end-user guide, brand setup pages, and restructure documentation (#113) ([PR #113](https://github.com/MarineYachtRadar/mayara-server/pull/113))
-- reduce pub visibility to pub(crate) and fix warnings (#123) ([PR #123](https://github.com/MarineYachtRadar/mayara-server/pull/123))
-- rename PixelToBlob to WireToLegend (#125) ([PR #125](https://github.com/MarineYachtRadar/mayara-server/pull/125))
-- **furuno:** clarify DRS4W network setup and model identification (#129) ([PR #129](https://github.com/MarineYachtRadar/mayara-server/pull/129))
-- **examples:** add Python ARPA/MARPA target viewer (#146) ([PR #146](https://github.com/MarineYachtRadar/mayara-server/pull/146))
-- add new-brand guide and fix markdown formatting (#150) ([PR #150](https://github.com/MarineYachtRadar/mayara-server/pull/150))
-
-### Fixed
-
-- prefer spoke heading over stale global heading in antenna offset (#82) ([PR #82](https://github.com/MarineYachtRadar/mayara-server/pull/82))
-- **emulator:** propagate RangeUnits set_value errors (#83) ([PR #83](https://github.com/MarineYachtRadar/mayara-server/pull/83))
-- **stream:** dedupe per-client radar metadata tracking (#87) ([PR #87](https://github.com/MarineYachtRadar/mayara-server/pull/87))
-- **stream:** handle navigation and target paths in desubscribe (#88) ([PR #88](https://github.com/MarineYachtRadar/mayara-server/pull/88))
-- **furuno:** restore DRS4W short ranges (1/8, 1/4, 1/2 NM) (#93) ([PR #93](https://github.com/MarineYachtRadar/mayara-server/pull/93))
-- **cliff:** anchor CodeRabbit-fixup skip rules to commit subject (#96) ([PR #96](https://github.com/MarineYachtRadar/mayara-server/pull/96))
-- **furuno:** handle 0x7D as radar alarm, not DRS4W heartbeat (#100) ([PR #100](https://github.com/MarineYachtRadar/mayara-server/pull/100))
-- **furuno:** handle 0xAF as ARPA alarm, not heartbeat (#101) ([PR #101](https://github.com/MarineYachtRadar/mayara-server/pull/101))
-- **furuno:** sqrt echo curve for DRS4W low-power radars (#111) ([PR #111](https://github.com/MarineYachtRadar/mayara-server/pull/111))
-- **network:** remove overly strict broadcast address assertion (#118) ([PR #118](https://github.com/MarineYachtRadar/mayara-server/pull/118))
-- **arpa:** stop flooding broadcast channel with per-blob target updates (#120) ([PR #120](https://github.com/MarineYachtRadar/mayara-server/pull/120))
-- **garmin:** add warmup time control and fix formatting (#135) ([PR #135](https://github.com/MarineYachtRadar/mayara-server/pull/135))
-- **koden:** remove unused fields to silence dead_code warnings (#142) ([PR #142](https://github.com/MarineYachtRadar/mayara-server/pull/142))
-- **target:** wrap negative guard-zone angles (#144) ([PR #144](https://github.com/MarineYachtRadar/mayara-server/pull/144))
-- **controls:** round instead of truncate in value conversions (#151) ([PR #151](https://github.com/MarineYachtRadar/mayara-server/pull/151))
-- **gui:** replace Auto button with toggle switch (#154) ([PR #154](https://github.com/MarineYachtRadar/mayara-server/pull/154))
-- **gui:** convert user units to SI in do_change (#158) ([PR #158](https://github.com/MarineYachtRadar/mayara-server/pull/158))
-- **gui:** show feedback when heading missing in acquire mode (#159) ([PR #159](https://github.com/MarineYachtRadar/mayara-server/pull/159))
-- **gui:** apply min/max/step to numeric controls (#157) ([PR #157](https://github.com/MarineYachtRadar/mayara-server/pull/157))
-- **furuno:** rebuild wire-to-legend LUT after legend reshape (#165) ([PR #165](https://github.com/MarineYachtRadar/mayara-server/pull/165))
-- **furuno:** defer spoke decode until Target Analyzer state is known (#167) ([PR #167](https://github.com/MarineYachtRadar/mayara-server/pull/167))
-
-## [3.4.2] - 2026-04-10
-
-### Added
-
+- add Docker setup with CI and production hardening
 - **recording:** Re-implement radar recording and playback ([PR #33](https://github.com/MarineYachtRadar/mayara-server/pull/33))
 - add Docker setup with CI and production hardening
 - add optional TLS support
@@ -235,9 +36,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **furuno:** send guard zone geometry to radar hardware
 - **furuno:** send guard zone geometry to radar hardware ([PR #70](https://github.com/MarineYachtRadar/mayara-server/pull/70))
 - **furuno:** add STC curve controls for sea clutter suppression (#74) ([PR #74](https://github.com/MarineYachtRadar/mayara-server/pull/74))
+- **furuno:** add anti-jamming filter control (0xE8) (#102) ([PR #102](https://github.com/MarineYachtRadar/mayara-server/pull/102))
+- **replay:** pcap replay infrastructure for all radar brands (#99) ([PR #99](https://github.com/MarineYachtRadar/mayara-server/pull/99))
+- **furuno:** 252-level palette, Tile echo decoder, and EchoFormat control (#108) ([PR #108](https://github.com/MarineYachtRadar/mayara-server/pull/108))
+- **navico:** scanner type identification, capability bitmasks, and deferred radar visibility (#116) ([PR #116](https://github.com/MarineYachtRadar/mayara-server/pull/116))
+- **navdata:** seed --static-position for real radars (#119) ([PR #119](https://github.com/MarineYachtRadar/mayara-server/pull/119))
+- **furuno:** wire 3-band Target Analyzer Doppler format into wire_to_legend (#131) ([PR #131](https://github.com/MarineYachtRadar/mayara-server/pull/131))
+- **furuno:** add NND file replay support (#133) ([PR #133](https://github.com/MarineYachtRadar/mayara-server/pull/133))
+- **koden:** add Koden RADARpc radar support (#134) ([PR #134](https://github.com/MarineYachtRadar/mayara-server/pull/134))
+- **navdata:** add Signal K discovery protocol and WebSocket transport (#43) ([PR #43](https://github.com/MarineYachtRadar/mayara-server/pull/43))
+- **recording:** faithful playback with source brand identity (#168) ([PR #168](https://github.com/MarineYachtRadar/mayara-server/pull/168))
+- **gui:** subscribe AIS overlay to Signal K vessels.* directly (#211) ([PR #211](https://github.com/MarineYachtRadar/mayara-server/pull/211))
+- **signalk:** support bearer-token auth for upstream Signal K (#227) ([PR #227](https://github.com/MarineYachtRadar/mayara-server/pull/227))
+- **gui:** add VRM/EBL markers with two-color drag interaction (#239) ([PR #239](https://github.com/MarineYachtRadar/mayara-server/pull/239))
+- **furuno:** draw oversampled spoke samples past the outer range ring (#241) ([PR #241](https://github.com/MarineYachtRadar/mayara-server/pull/241))
+- **gui:** show active renderer (webgpu/webgl) in the controls header (#252) ([PR #252](https://github.com/MarineYachtRadar/mayara-server/pull/252))
+- **arpa:** emit Signal K notifications for guard-zone target acquisition (#260) ([PR #260](https://github.com/MarineYachtRadar/mayara-server/pull/260))
+- **gui:** gray out AIS toggle when no heading source is available (#297) ([PR #297](https://github.com/MarineYachtRadar/mayara-server/pull/297))
+- **gui:** support magnetic heading with true/magnetic readout toggle (#315) ([PR #315](https://github.com/MarineYachtRadar/mayara-server/pull/315))
+- surface upstream nav/token/AIS status in the radar GUI (#326) ([PR #326](https://github.com/MarineYachtRadar/mayara-server/pull/326))
+- **docker:** add container healthcheck probing /signalk (#329) ([PR #329](https://github.com/MarineYachtRadar/mayara-server/pull/329))
+- **raymarine:** send WiFi wake nudge to idle Quantum radars (#341) ([PR #341](https://github.com/MarineYachtRadar/mayara-server/pull/341))
+- **gui:** add Network Diagnostics download button (#352) ([PR #352](https://github.com/MarineYachtRadar/mayara-server/pull/352))
+- **navico:** surface radar errors and a Fault power state (#346) ([PR #346](https://github.com/MarineYachtRadar/mayara-server/pull/346))
+- **gui:** show radar notifications and a fault power state (#347) ([PR #347](https://github.com/MarineYachtRadar/mayara-server/pull/347))
+- **raymarine:** surface Quantum self-test faults and decode per-item results (#385) ([PR #385](https://github.com/MarineYachtRadar/mayara-server/pull/385))
+- **garmin:** send CDM V2 heartbeat to wake Fantom radars (#156) (#267) ([PR #267](https://github.com/MarineYachtRadar/mayara-server/pull/267))
+- **web:** add --no-websocket-compression flag (#393) ([PR #393](https://github.com/MarineYachtRadar/mayara-server/pull/393))
+- **replay:** add --pcap-max-time flag (#395) ([PR #395](https://github.com/MarineYachtRadar/mayara-server/pull/395))
+- **client-examples:** add --duration load-driver mode to spoke_viewer (#396) ([PR #396](https://github.com/MarineYachtRadar/mayara-server/pull/396))
+- **raymarine:** wake, control and power radars behind an Axiom (#427) ([PR #427](https://github.com/MarineYachtRadar/mayara-server/pull/427))
+- **radar:** show powered-off radars as off when they go silent (#455) ([PR #455](https://github.com/MarineYachtRadar/mayara-server/pull/455))
+- **output:** Garmin xHD output bridge (garmin-xhd-output feature)
+
+### CI
+
+- upload artifact
 
 ### Changed
 
+- **api:** unwrap /radars response, remove version wrapper
 - **api:** unwrap /radars response, remove version wrapper
 - **agents:** require CHANGELOG entry for each change
 - **docker:** add deployment instructions for Docker
@@ -259,9 +97,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **furuno:** consolidate protocol constants into protocol.rs
 - **furuno:** consolidate protocol constants into protocol.rs #68 ([PR #68](https://github.com/MarineYachtRadar/mayara-server/pull/68))
 - **agents:** add CR review and test requirements before PR
+- **furuno:** add FAR radar setup guide (#85) ([PR #85](https://github.com/MarineYachtRadar/mayara-server/pull/85))
+- **contributing:** add workflow guide, CodeRabbit config, scoped changelog (#95) ([PR #95](https://github.com/MarineYachtRadar/mayara-server/pull/95))
+- add end-user guide, brand setup pages, and restructure documentation (#113) ([PR #113](https://github.com/MarineYachtRadar/mayara-server/pull/113))
+- reduce pub visibility to pub(crate) and fix warnings (#123) ([PR #123](https://github.com/MarineYachtRadar/mayara-server/pull/123))
+- rename PixelToBlob to WireToLegend (#125) ([PR #125](https://github.com/MarineYachtRadar/mayara-server/pull/125))
+- **furuno:** clarify DRS4W network setup and model identification (#129) ([PR #129](https://github.com/MarineYachtRadar/mayara-server/pull/129))
+- **examples:** add Python ARPA/MARPA target viewer (#146) ([PR #146](https://github.com/MarineYachtRadar/mayara-server/pull/146))
+- add new-brand guide and fix markdown formatting (#150) ([PR #150](https://github.com/MarineYachtRadar/mayara-server/pull/150))
+- **furuno:** correct DRS to DRS2D in supported radars list (#204) ([PR #204](https://github.com/MarineYachtRadar/mayara-server/pull/204))
+- add capturing-traffic guide and cross-links (#230) ([PR #230](https://github.com/MarineYachtRadar/mayara-server/pull/230))
+- document --signalk-token / --signalk-token-file (#235) ([PR #235](https://github.com/MarineYachtRadar/mayara-server/pull/235))
+- **agents:** note the GUI must use relative API/WS base paths (#272) ([PR #272](https://github.com/MarineYachtRadar/mayara-server/pull/272))
+- **enduser:** explain heading requirement for AIS/ARPA overlays (#302) ([PR #302](https://github.com/MarineYachtRadar/mayara-server/pull/302))
+- **internals:** add radar_pi comparison guide for C++ developers (#266) ([PR #266](https://github.com/MarineYachtRadar/mayara-server/pull/266))
+- **building:** update feature list to match Cargo.toml (#307) ([PR #307](https://github.com/MarineYachtRadar/mayara-server/pull/307))
+- **logging:** drop env_logger regex feature (#305) ([PR #305](https://github.com/MarineYachtRadar/mayara-server/pull/305))
+- fix incorrect GitHub URLs in ENDUSER and BUILDING (#306) ([PR #306](https://github.com/MarineYachtRadar/mayara-server/pull/306))
+- **radar:** make the idle-decode gate brand-agnostic (#321) ([PR #321](https://github.com/MarineYachtRadar/mayara-server/pull/321))
+- **agents:** require user-facing description first in issues and PRs (#373) ([PR #373](https://github.com/MarineYachtRadar/mayara-server/pull/373))
+- drop magic numbers when sending Power control values (#377) ([PR #377](https://github.com/MarineYachtRadar/mayara-server/pull/377))
+- consolidate NM and knot conversion constants (#381) ([PR #381](https://github.com/MarineYachtRadar/mayara-server/pull/381))
+- **radar:** pre-size serialization buffer for spoke broadcasts (#394) ([PR #394](https://github.com/MarineYachtRadar/mayara-server/pull/394))
+- **web:** tune permessage-deflate for radar streams (#398) ([PR #398](https://github.com/MarineYachtRadar/mayara-server/pull/398))
+- **radar:** broadcast serialized spokes as Bytes, not Vec<u8> (#399) ([PR #399](https://github.com/MarineYachtRadar/mayara-server/pull/399))
+- **radar:** coalesce spokes into ~1/32-revolution batches (#400) ([PR #400](https://github.com/MarineYachtRadar/mayara-server/pull/400))
+- correct and expand the server description (#339) ([PR #339](https://github.com/MarineYachtRadar/mayara-server/pull/339))
+- **internals:** document radar status model (#410) ([PR #410](https://github.com/MarineYachtRadar/mayara-server/pull/410))
+- **target:** reduce ARPA CPU usage ~3.5x (#444) ([PR #444](https://github.com/MarineYachtRadar/mayara-server/pull/444))
+- **garmin-xhd-output:** address CodeRabbit review findings
+- **garmin-xhd-output:** use tokio::net::UdpSocket for all output sockets
+- correct jitter-buffer drain-rate description
 
 ### Fixed
 
+- **openapi:** align schema names and readOnly fields with openApi.ts
 - **openapi:** align schema names and readOnly fields with openApi.ts
 - Show all IPv4 addresses per interface in Interfaces API
 - **api:** correct HTTP status codes and improve error messages
@@ -323,15 +193,98 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **furuno:** guard length check on $N70 guard status notification
 - **ci:** use PR for changelog commit to respect branch protection (#73) ([PR #73](https://github.com/MarineYachtRadar/mayara-server/pull/73))
 - **ci:** fall back to immediate merge when auto-merge not needed (#77) ([PR #77](https://github.com/MarineYachtRadar/mayara-server/pull/77))
+- prefer spoke heading over stale global heading in antenna offset (#82) ([PR #82](https://github.com/MarineYachtRadar/mayara-server/pull/82))
+- **emulator:** propagate RangeUnits set_value errors (#83) ([PR #83](https://github.com/MarineYachtRadar/mayara-server/pull/83))
+- **stream:** dedupe per-client radar metadata tracking (#87) ([PR #87](https://github.com/MarineYachtRadar/mayara-server/pull/87))
+- **stream:** handle navigation and target paths in desubscribe (#88) ([PR #88](https://github.com/MarineYachtRadar/mayara-server/pull/88))
+- **furuno:** restore DRS4W short ranges (1/8, 1/4, 1/2 NM) (#93) ([PR #93](https://github.com/MarineYachtRadar/mayara-server/pull/93))
+- **cliff:** anchor CodeRabbit-fixup skip rules to commit subject (#96) ([PR #96](https://github.com/MarineYachtRadar/mayara-server/pull/96))
+- **furuno:** handle 0x7D as radar alarm, not DRS4W heartbeat (#100) ([PR #100](https://github.com/MarineYachtRadar/mayara-server/pull/100))
+- **furuno:** handle 0xAF as ARPA alarm, not heartbeat (#101) ([PR #101](https://github.com/MarineYachtRadar/mayara-server/pull/101))
+- **furuno:** sqrt echo curve for DRS4W low-power radars (#111) ([PR #111](https://github.com/MarineYachtRadar/mayara-server/pull/111))
+- **network:** remove overly strict broadcast address assertion (#118) ([PR #118](https://github.com/MarineYachtRadar/mayara-server/pull/118))
+- **arpa:** stop flooding broadcast channel with per-blob target updates (#120) ([PR #120](https://github.com/MarineYachtRadar/mayara-server/pull/120))
+- **garmin:** add warmup time control and fix formatting (#135) ([PR #135](https://github.com/MarineYachtRadar/mayara-server/pull/135))
+- **koden:** remove unused fields to silence dead_code warnings (#142) ([PR #142](https://github.com/MarineYachtRadar/mayara-server/pull/142))
+- **target:** wrap negative guard-zone angles (#144) ([PR #144](https://github.com/MarineYachtRadar/mayara-server/pull/144))
+- **controls:** round instead of truncate in value conversions (#151) ([PR #151](https://github.com/MarineYachtRadar/mayara-server/pull/151))
+- **gui:** replace Auto button with toggle switch (#154) ([PR #154](https://github.com/MarineYachtRadar/mayara-server/pull/154))
+- **gui:** convert user units to SI in do_change (#158) ([PR #158](https://github.com/MarineYachtRadar/mayara-server/pull/158))
+- **gui:** show feedback when heading missing in acquire mode (#159) ([PR #159](https://github.com/MarineYachtRadar/mayara-server/pull/159))
+- **gui:** apply min/max/step to numeric controls (#157) ([PR #157](https://github.com/MarineYachtRadar/mayara-server/pull/157))
+- **furuno:** rebuild wire-to-legend LUT after legend reshape (#165) ([PR #165](https://github.com/MarineYachtRadar/mayara-server/pull/165))
+- **furuno:** defer spoke decode until Target Analyzer state is known (#167) ([PR #167](https://github.com/MarineYachtRadar/mayara-server/pull/167))
+- **furuno:** skip set_value for unsupported controls (#190) ([PR #190](https://github.com/MarineYachtRadar/mayara-server/pull/190))
+- **recordings:** clean up orphaned .upload files at startup (#192) ([PR #192](https://github.com/MarineYachtRadar/mayara-server/pull/192))
+- **gui:** inscribe PPI in canvas so full range is visible (#200) ([PR #200](https://github.com/MarineYachtRadar/mayara-server/pull/200))
+- **furuno:** clamp spoke alignment overshoot on last sweep (#202) ([PR #202](https://github.com/MarineYachtRadar/mayara-server/pull/202))
+- **gui:** keep guard-zone buttons inside the card on narrow panels (#212) ([PR #212](https://github.com/MarineYachtRadar/mayara-server/pull/212))
+- **deps:** migrate to tokio-graceful-shutdown 0.19 closure API (#215) ([PR #215](https://github.com/MarineYachtRadar/mayara-server/pull/215))
+- **deps:** use system-configuration's core-foundation re-export (#218) ([PR #218](https://github.com/MarineYachtRadar/mayara-server/pull/218))
+- **macos:** handle Option return from SCDynamicStoreBuilder::build (#221) ([PR #221](https://github.com/MarineYachtRadar/mayara-server/pull/221))
+- **raymarine:** prime command_sender at discovery so Quantum wired wakes without an MFD (#232) ([PR #232](https://github.com/MarineYachtRadar/mayara-server/pull/232))
+- **web:** send Cache-Control: no-cache on embedded GUI assets (#237) ([PR #237](https://github.com/MarineYachtRadar/mayara-server/pull/237))
+- **gui:** round VRM/EBL distance readout to navigator-useful precision (#243) ([PR #243](https://github.com/MarineYachtRadar/mayara-server/pull/243))
+- **gui:** keep PPI sized to the visible viewport on mobile (#249) ([PR #249](https://github.com/MarineYachtRadar/mayara-server/pull/249))
+- **gui:** exponential backoff for heading and AIS reconnects (#254) ([PR #254](https://github.com/MarineYachtRadar/mayara-server/pull/254))
+- **signalk:** skip upstream servers that accept then go silent (#256) ([PR #256](https://github.com/MarineYachtRadar/mayara-server/pull/256))
+- **signalk:** require own-ship navigation before trusting an upstream (#258) ([PR #258](https://github.com/MarineYachtRadar/mayara-server/pull/258))
+- **signalk:** match notifications.* in subscription filter (#262) ([PR #262](https://github.com/MarineYachtRadar/mayara-server/pull/262))
+- **web:** respect X-Forwarded-Proto and Host port for advertised WS URLs (#264) ([PR #264](https://github.com/MarineYachtRadar/mayara-server/pull/264))
+- **gui:** don't reset canvas bitmap on transform-only redraws (#268) ([PR #268](https://github.com/MarineYachtRadar/mayara-server/pull/268))
+- **gui:** address API and WebSocket URLs relative to the GUI mount (#270) ([PR #270](https://github.com/MarineYachtRadar/mayara-server/pull/270))
+- **ci:** force-switch to main when committing the regenerated CHANGELOG (#280) ([PR #280](https://github.com/MarineYachtRadar/mayara-server/pull/280))
+- **furuno:** detect dead control socket so first PUT after idle succeeds (#282) ([PR #282](https://github.com/MarineYachtRadar/mayara-server/pull/282))
+- **furuno:** skip spoke decode in idle mode to free ~1.5 cores at idle (#284) ([PR #284](https://github.com/MarineYachtRadar/mayara-server/pull/284))
+- **navdata:** exponential backoff on Signal K reconnect when no own-ship nav (#285) ([PR #285](https://github.com/MarineYachtRadar/mayara-server/pull/285))
+- **arpa:** tracker, IMM, CPA and dedup improvements per design plan (#275) ([PR #275](https://github.com/MarineYachtRadar/mayara-server/pull/275))
+- **gui:** plot AIS using radar heading when SignalK true heading absent (#296) ([PR #296](https://github.com/MarineYachtRadar/mayara-server/pull/296))
+- **gui:** plot ARPA targets using radar heading when true heading absent (#298) ([PR #298](https://github.com/MarineYachtRadar/mayara-server/pull/298))
+- **gui:** show own-ship nav and heading UI without a heading subscription (#313) ([PR #313](https://github.com/MarineYachtRadar/mayara-server/pull/313))
+- **gui:** hide ON-TIME/TX-TIME when the radar does not report them (#316) ([PR #316](https://github.com/MarineYachtRadar/mayara-server/pull/316))
+- **raymarine:** decode Quantum self-test fault status (#335) ([PR #335](https://github.com/MarineYachtRadar/mayara-server/pull/335))
+- **raymarine:** correct Quantum interference-rejection byte and gain-value id (#337) ([PR #337](https://github.com/MarineYachtRadar/mayara-server/pull/337))
+- **clippy:** make  warning-clean and gate it in CI + pre-commit (#358) ([PR #358](https://github.com/MarineYachtRadar/mayara-server/pull/358))
+- **settings:** parse_path: split on `.controls.`, route to the right radar (#367) ([PR #367](https://github.com/MarineYachtRadar/mayara-server/pull/367))
+- **raymarine:** bound-check Quantum frame and RLE markers (#369) ([PR #369](https://github.com/MarineYachtRadar/mayara-server/pull/369))
+- **settings:** resolve enum labels by HashMap key, not iteration index (#371) ([PR #371](https://github.com/MarineYachtRadar/mayara-server/pull/371))
+- **stream:** keep throttle deadline when dropping a too-soon update (#375) ([PR #375](https://github.com/MarineYachtRadar/mayara-server/pull/375))
+- **raymarine:** do not draw targets in doppler color when doppler is off (#379) ([PR #379](https://github.com/MarineYachtRadar/mayara-server/pull/379))
+- **raymarine:** Add support for Quantum via WiFi (#348) ([PR #348](https://github.com/MarineYachtRadar/mayara-server/pull/348))
+- **docker:** make docker/Dockerfile actually build (#391) ([PR #391](https://github.com/MarineYachtRadar/mayara-server/pull/391))
+- **navdata:** keep own ship out of the AIS overlay (#408) ([PR #408](https://github.com/MarineYachtRadar/mayara-server/pull/408))
+- **raymarine:** surface discovered radars so an asleep Quantum is visible (#422) ([PR #422](https://github.com/MarineYachtRadar/mayara-server/pull/422))
+- **raymarine:** correct Quantum model names for E70210 and E70344 (#420) ([PR #420](https://github.com/MarineYachtRadar/mayara-server/pull/420))
+- **gui:** stabilize north-up to true north via per-spoke bearing (#429) ([PR #429](https://github.com/MarineYachtRadar/mayara-server/pull/429))
+- **clippy:** resolve new lints from Rust 1.97 clippy (#437) ([PR #437](https://github.com/MarineYachtRadar/mayara-server/pull/437))
+- **clippy:** clean up 79 warnings from clippy 1.97 (#438) ([PR #438](https://github.com/MarineYachtRadar/mayara-server/pull/438))
+- **target:** bound blob detector memory for never-completing blobs (#435) ([PR #435](https://github.com/MarineYachtRadar/mayara-server/pull/435))
+- **navico:** clean and disambiguate radar names (#451) ([PR #451](https://github.com/MarineYachtRadar/mayara-server/pull/451))
+- **locator:** survive UDP recv errors on Windows (#449) ([PR #449](https://github.com/MarineYachtRadar/mayara-server/pull/449))
+- **radar:** key by IP when serial number is empty (#448) ([PR #448](https://github.com/MarineYachtRadar/mayara-server/pull/448))
+- **navico:** correct Doppler-mode colour palette (#456) ([PR #456](https://github.com/MarineYachtRadar/mayara-server/pull/456))
+- **trail:** correct target-trail colours (#457) ([PR #457](https://github.com/MarineYachtRadar/mayara-server/pull/457))
+- **raymarine:** support RD418D radomes (discovery and decoding) (#465) ([PR #465](https://github.com/MarineYachtRadar/mayara-server/pull/465))
+- add cmake to docker build tools (#469) ([PR #469](https://github.com/MarineYachtRadar/mayara-server/pull/469))
+- **raymarine:** support RD418HD radomes (discovery and decoding) (#470) ([PR #470](https://github.com/MarineYachtRadar/mayara-server/pull/470))
+- **output/garmin_xhd:** correct socket binding, IP detection and spoke scaling
+- **output/garmin_xhd:** rain state caching, transmit state from controls
+- **garmin-xhd-output:** proper tokio async sockets, non-blocking spoke sends
 
-[Unreleased]: https://github.com/MarineYachtRadar/mayara-server/compare/v3.7.0...HEAD
-[3.7.0]: https://github.com/MarineYachtRadar/mayara-server/compare/v3.6.0...v3.7.0
-[3.6.0]: https://github.com/MarineYachtRadar/mayara-server/compare/v3.5.4...v3.6.0
-[3.5.4]: https://github.com/MarineYachtRadar/mayara-server/compare/v3.5.3...v3.5.4
-[3.5.3]: https://github.com/MarineYachtRadar/mayara-server/compare/v3.5.2...v3.5.3
-[3.5.2]: https://github.com/MarineYachtRadar/mayara-server/compare/v3.5.1...v3.5.2
-[3.5.0]: https://github.com/MarineYachtRadar/mayara-server/compare/v3.4.2...v3.5.0
-[3.4.2]: https://github.com/MarineYachtRadar/mayara-server/compare/v3.4.1...v3.4.2
+### Furuno
+
+- cleanup, fix crash, re-login when needed
+- initial FAR-2127 support
+- clear proper buffer
+- fix RPM display
+- determine model type properly from  message
+
+### Raymarine
+
+- Doppler colours in Ray colors (purple and green) for now.
+- show legends and radar detections
+
+[3.7.0-xhd.1]: https://github.com/MarineYachtRadar/mayara-server/compare/v3.4.1...v3.7.0-xhd.1
 
 
 
