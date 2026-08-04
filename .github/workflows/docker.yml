@@ -44,7 +44,7 @@ jobs:
       run: cargo install cross
 
     - name: Build binary
-      run: cross build --release --target ${{ matrix.target }}
+      run: cross build --release --target ${{ matrix.target }} --features garmin-xhd-output
 
     - name: Upload binary
       uses: actions/upload-artifact@v7
