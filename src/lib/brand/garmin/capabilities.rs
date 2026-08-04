@@ -27,6 +27,14 @@ const CAP_BODY_FIRST_WORD_OFFSET: usize = 8;
 /// header offset prefix.
 const CAP_BODY_TOTAL_LEN: usize = CAP_BODY_FIRST_WORD_OFFSET + CAP_WORDS * 8;
 
+/// The eight bytes before the first capability word, as a GMR xHD sends them.
+/// The MFD's parser reads the five words at their fixed offsets and never
+/// looks at these (see `research/garmin/feature-detection.md`), so their
+/// meaning is unknown; they are reproduced so a body we generate has the same
+/// shape as one off the wire.
+const CAP_BODY_PREFIX: [u8; CAP_BODY_FIRST_WORD_OFFSET] =
+    [0x01, 0x00, 0x30, 0x00, 0x9d, 0x00, 0x0a, 0x00];
+
 /// Capability bit identifiers. Numeric values match the per-bit indices
 /// used by the Garmin MFD; the multi-byte u64 layout is hidden inside
 /// [`GarminCapabilities::has`].
@@ -139,11 +147,29 @@ impl GarminCapabilities {
     /// (single range, manual/auto gain, sea/rain clutter, no-TX zone 1,
     /// sentry mode, RPM mode toggle).
     pub(crate) fn for_legacy_hd() -> Self {
+        Self::from_bits(LEGACY_HD_BITS)
+    }
+
+    /// Build a capability vector claiming exactly `bits`.
+    pub(crate) fn from_bits(bits: &[u32]) -> Self {
         let mut caps = Self::empty();
-        for &bit in LEGACY_HD_BITS {
+        for &bit in bits {
             caps.set(bit);
         }
         caps
+    }
+
+    /// Serialize into a `0x09B1` message body, the inverse of [`Self::parse`].
+    /// Used by the Garmin xHD output bridge to tell a display what the radar
+    /// it emulates can do.
+    pub(crate) fn to_body(self) -> [u8; CAP_BODY_TOTAL_LEN] {
+        let mut body = [0u8; CAP_BODY_TOTAL_LEN];
+        body[..CAP_BODY_FIRST_WORD_OFFSET].copy_from_slice(&CAP_BODY_PREFIX);
+        for (word, value) in self.bits.iter().enumerate() {
+            let start = CAP_BODY_FIRST_WORD_OFFSET + word * 8;
+            body[start..start + 8].copy_from_slice(&value.to_le_bytes());
+        }
+        body
     }
 
     /// Parse a `0x09B1` payload (the message body **as received from the
