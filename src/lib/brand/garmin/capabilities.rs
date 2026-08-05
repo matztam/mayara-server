@@ -28,10 +28,17 @@ const CAP_BODY_FIRST_WORD_OFFSET: usize = 8;
 const CAP_BODY_TOTAL_LEN: usize = CAP_BODY_FIRST_WORD_OFFSET + CAP_WORDS * 8;
 
 /// The eight bytes before the first capability word, as a GMR xHD sends them.
-/// The MFD's parser reads the five words at their fixed offsets and never
-/// looks at these (see `research/garmin/feature-detection.md`), so their
-/// meaning is unknown; they are reproduced so a body we generate has the same
-/// shape as one off the wire.
+///
+/// Captured at offset +00 of the `0x09B1` body in
+/// `radar-recordings/garmin/garmin_xhd.pcap`, the same fixture as
+/// `SAMPLE_0X09B1_BODY` below; documented in
+/// `research/garmin/feature-detection.md`, which reads the first four fields
+/// as a length/version pair followed by two unidentified ones.
+///
+/// Their meaning is unknown and does not matter: the MFD's
+/// `radar_parse_xhd_capability_packet()` (`FUN_0490ef30`) reads the five words
+/// at their fixed offsets `+0x08`..`+0x28` and never looks at the prefix. It is
+/// reproduced so a body mayara generates has the same shape as one off the wire.
 const CAP_BODY_PREFIX: [u8; CAP_BODY_FIRST_WORD_OFFSET] =
     [0x01, 0x00, 0x30, 0x00, 0x9d, 0x00, 0x0a, 0x00];
 

@@ -35,7 +35,7 @@ If your radar is not on the fully supported list, contact us to help with testin
 
 Mayara can also work the other way around: an optional build feature makes it
 [emulate a Garmin radar](docs/garmin-xhd-output.md), so a Garmin chartplotter
-can display the picture of any radar Mayara supports.
+can display the picture of a radar of any other supported brand.
 
 ## End users
 

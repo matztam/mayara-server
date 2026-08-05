@@ -173,9 +173,12 @@ impl SpokeStream {
         display_m: u32,
         out: &mut VecDeque<Vec<u8>>,
     ) {
+        // Wrap before narrowing: an angle beyond a revolution — a radar that
+        // reports more than it claims, or one whose spoke count changed under
+        // us — would otherwise be truncated into an unrelated index.
         let index = ((angle as u64 * SPOKES_PER_REVOLUTION as u64)
-            / self.spokes_per_revolution as u64) as u16
-            % SPOKES_PER_REVOLUTION as u16;
+            / self.spokes_per_revolution as u64
+            % SPOKES_PER_REVOLUTION as u64) as u16;
 
         match &mut self.pending {
             // Several source spokes fall in the same xHD spoke: keep the
@@ -309,6 +312,20 @@ mod tests {
                 .collect();
             assert_eq!(angles, expected, "{spokes} spokes/revolution");
         }
+    }
+
+    #[test]
+    fn an_angle_beyond_a_revolution_wraps_instead_of_truncating() {
+        let legend = legend(16, 0);
+        let mut stream = SpokeStream::new(2048, &legend);
+        let mut out = VecDeque::new();
+        // Far enough past a revolution that the quotient does not fit a u16:
+        // 100000 × 1440 / 2048 = 70312, which wraps to spoke 1192. Narrowing
+        // before the wrap would truncate to 4776 and land on spoke 456.
+        stream.push(100_000, &[1u8; 512], 3704, 3704, &mut out);
+        stream.push(100_001, &[1u8; 512], 3704, 3704, &mut out);
+
+        assert_eq!(angle_of(&out[0]), 1192 * ANGLE_UNITS_PER_SPOKE);
     }
 
     #[test]

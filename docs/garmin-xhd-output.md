@@ -12,6 +12,11 @@ and the transmit button on the plotter change the setting on the real radar,
 and a change made from Mayara's own GUI or another display shows up on the
 plotter.
 
+> **Not yet validated on a chartplotter.** The bridge has been verified against
+> Mayara's own Garmin receiver over loopback — discovery, the report stream,
+> controls and spoke data all check out — but nobody has yet put it in front of
+> a physical Garmin GPSMAP. If you try it, please report how it goes.
+
 ## What you need
 
 - Mayara built with the feature (it is not in the standard binaries):
@@ -25,7 +30,7 @@ plotter.
   radar is on a different subnet — a Furuno on `172.31.x.x`, say — give the
   same interface both addresses:
 
-  ```
+  ```text
   enp0s13f0u2
     172.31.254.217/16   Furuno radar
     172.16.254.217/12   Garmin Marine Network
@@ -41,7 +46,7 @@ plotter.
 
 The log says which radar is being emulated and from where:
 
-```
+```text
 Furuno-1234: Garmin xHD output emulating a GMR xHD on 172.16.254.217
 ```
 

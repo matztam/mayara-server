@@ -77,6 +77,55 @@ const MSG_STATUS_C: u32 = 0x099e;
 /// so plausible values are sent instead of nothing.
 const ANTENNA_HEIGHT_CM: u16 = 350;
 const ANTENNA_FORWARD_CM: u16 = 150;
+const ANTENNA_STARBOARD_CM: u16 = 0;
+
+// Values of the reports above, as the captured GMR xHD sends them. mayara has
+// no equivalent state to derive any of these from, and they describe the
+// transmitter rather than anything the source radar could contribute.
+const ANTENNA_POWER: u16 = 0x2134;
+const TRIGGER_PERIOD: u32 = 0x0000_09b4;
+const TRIGGER_DELAY: u32 = 0x0000_1710;
+const TRIGGER_PERIOD_B: u32 = 0x0000_16f8;
+const TUNE_FINE: u8 = 2;
+const TUNE_COARSE: u8 = 0;
+const TUNE_MODE: u8 = 0;
+const STATUS_A: u8 = 1;
+const STATUS_B: u8 = 1;
+const STATUS_C: u8 = 0;
+
+/// Scan type: one range, as opposed to the dual-range modes.
+const SCAN_TYPE_SINGLE: u8 = 1;
+const SCAN_TYPE_B: u8 = 0;
+const SCAN_TYPE_C: u8 = 0;
+
+/// Range mode: single range.
+const RANGE_MODE_SINGLE: u8 = 0;
+
+/// Automatic frequency control, which the emulated radar leaves on and offers
+/// no way to change.
+const AFC_MODE_AUTO: u8 = 1;
+
+/// Interference rejection and crosstalk suppression happen on the source
+/// radar, if at all, so the emulated one reports both switched off.
+const DITHER_OFF: u8 = 0;
+const NOISE_BLANKER_OFF: u8 = 0;
+
+/// Spokes per revolution as an xHD counts them for this report, which is not
+/// the 1440 it sends (`0x0960` in the capture; see
+/// `research/garmin/discovery-handshake.md`).
+const SPOKE_TOTAL: u32 = 2400;
+
+/// Supply voltage in decivolts: 12.0 V.
+const INPUT_VOLTAGE_DV: u16 = 120;
+
+/// Everything the bridge does not emulate reports as off or centred.
+const OFF: u8 = 0;
+const NO_BEARING_OFFSET: u32 = 0;
+const NO_TIME: u16 = 0;
+
+/// Milliseconds until the scanner state changes again. The emulated radar
+/// never warms up or spins down on a timer, so its state is always settled.
+const NO_STATE_CHANGE_PENDING: u32 = 0;
 
 /// The range B fields still have to carry something in single-range mode;
 /// 1/2 NM is what the captured radar reports.
@@ -157,13 +206,13 @@ fn reports(shared: &Shared) -> Vec<Vec<u8>> {
 
     vec![
         packet_u8(MSG_SCANNER_STATE, scanner_state),
-        packet_u32(MSG_STATE_CHANGE, 0),
+        packet_u32(MSG_STATE_CHANGE, NO_STATE_CHANGE_PENDING),
         packet_u8(MSG_TRANSMIT_MODE, u8::from(transmitting)),
         packet_u8(MSG_TRANSMIT_MODE_CURRENT, u8::from(transmitting)),
-        packet_u8(MSG_SCAN_TYPE, 1),
-        packet_u8(MSG_SCAN_TYPE_B, 0),
-        packet_u8(MSG_SCAN_TYPE_C, 0),
-        packet_u8(MSG_RANGE_MODE, 0),
+        packet_u8(MSG_SCAN_TYPE, SCAN_TYPE_SINGLE),
+        packet_u8(MSG_SCAN_TYPE_B, SCAN_TYPE_B),
+        packet_u8(MSG_SCAN_TYPE_C, SCAN_TYPE_C),
+        packet_u8(MSG_RANGE_MODE, RANGE_MODE_SINGLE),
         packet_u32(MSG_RANGE_A, shared.range_m()),
         packet_u32(MSG_RANGE_B, RANGE_B_M),
         packet_u8(
@@ -177,36 +226,36 @@ fn reports(shared: &Shared) -> Vec<Vec<u8>> {
         packet_u16(MSG_RANGE_A_GAIN, gain),
         packet_u8(MSG_RANGE_A_SEA_MODE, sea_mode),
         packet_u16(MSG_RANGE_A_SEA_GAIN, sea),
-        packet_u8(MSG_RANGE_A_SEA_STATE, 0),
+        packet_u8(MSG_RANGE_A_SEA_STATE, OFF),
         packet_u8(MSG_RANGE_A_RAIN_MODE, rain_mode),
         packet_u16(MSG_RANGE_A_RAIN_GAIN, rain),
-        packet_u8(MSG_DITHER_MODE, 0),
-        packet_u8(MSG_NOISE_BLANKER, 0),
+        packet_u8(MSG_DITHER_MODE, DITHER_OFF),
+        packet_u8(MSG_NOISE_BLANKER, NOISE_BLANKER_OFF),
         // The source radar applies its own bearing alignment before it hands
         // over a spoke, so the emulated radar is aligned by definition.
-        packet_u32(MSG_BEARING_ALIGNMENT, 0),
-        packet_u8(MSG_NO_TX_ZONE_1_MODE, 0),
-        packet_u8(MSG_SENTRY_MODE, 0),
-        packet_u16(MSG_SENTRY_STANDBY_TIME, 0),
-        packet_u16(MSG_SENTRY_TRANSMIT_TIME, 0),
-        packet_u8(MSG_AFC_MODE, 1),
-        packet_u8(MSG_RPM_MODE, 0),
+        packet_u32(MSG_BEARING_ALIGNMENT, NO_BEARING_OFFSET),
+        packet_u8(MSG_NO_TX_ZONE_1_MODE, OFF),
+        packet_u8(MSG_SENTRY_MODE, OFF),
+        packet_u16(MSG_SENTRY_STANDBY_TIME, NO_TIME),
+        packet_u16(MSG_SENTRY_TRANSMIT_TIME, NO_TIME),
+        packet_u8(MSG_AFC_MODE, AFC_MODE_AUTO),
+        packet_u8(MSG_RPM_MODE, OFF),
         packet_u16(MSG_ANTENNA_HEIGHT, ANTENNA_HEIGHT_CM),
         packet_u16(MSG_ANTENNA_FORWARD, ANTENNA_FORWARD_CM),
-        packet_u16(MSG_ANTENNA_STARBOARD, 0),
-        packet_u16(MSG_ANTENNA_POWER, 0x2134),
-        packet_u32(MSG_TRIGGER_PERIOD, 0x0000_09b4),
-        packet_u32(MSG_TRIGGER_DELAY, 0x0000_1710),
-        packet_u32(MSG_TRIGGER_PERIOD_B, 0x0000_16f8),
-        packet_u8(MSG_TUNE_FINE, 2),
-        packet_u8(MSG_TUNE_COARSE, 0),
-        packet_u8(MSG_TUNE_MODE, 0),
-        packet_u8(MSG_STATUS_A, 1),
-        packet_u8(MSG_STATUS_B, 1),
-        packet_u8(MSG_STATUS_C, 0),
+        packet_u16(MSG_ANTENNA_STARBOARD, ANTENNA_STARBOARD_CM),
+        packet_u16(MSG_ANTENNA_POWER, ANTENNA_POWER),
+        packet_u32(MSG_TRIGGER_PERIOD, TRIGGER_PERIOD),
+        packet_u32(MSG_TRIGGER_DELAY, TRIGGER_DELAY),
+        packet_u32(MSG_TRIGGER_PERIOD_B, TRIGGER_PERIOD_B),
+        packet_u8(MSG_TUNE_FINE, TUNE_FINE),
+        packet_u8(MSG_TUNE_COARSE, TUNE_COARSE),
+        packet_u8(MSG_TUNE_MODE, TUNE_MODE),
+        packet_u8(MSG_STATUS_A, STATUS_A),
+        packet_u8(MSG_STATUS_B, STATUS_B),
+        packet_u8(MSG_STATUS_C, STATUS_C),
         packet_u32(MSG_MAX_RANGE, *XHD_RANGES_M.last().unwrap()),
-        packet_u32(MSG_SPOKE_TOTAL, 2400),
-        packet_u16(MSG_INPUT_VOLTAGE, 120),
+        packet_u32(MSG_SPOKE_TOTAL, SPOKE_TOTAL),
+        packet_u16(MSG_INPUT_VOLTAGE, INPUT_VOLTAGE_DV),
         capability_report(),
         range_table(),
     ]

@@ -161,3 +161,78 @@ fn enqueue(
         log::warn!("{key}: Garmin xHD spokes: behind by {dropped} spokes, dropping oldest");
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::TargetMode;
+    use crate::output::garmin_xhd::tests::controls;
+    use crate::protos::RadarMessage::radar_message::Spoke;
+    use crate::radar::default_legend;
+
+    /// A batch of spokes as a brand would broadcast it, serialized.
+    fn message(spokes: impl IntoIterator<Item = (u32, u32)>) -> Vec<u8> {
+        let mut message = RadarMessage::new();
+        for (angle, range) in spokes {
+            let mut spoke = Spoke::new();
+            spoke.angle = angle;
+            spoke.range = range;
+            spoke.data = vec![1u8; 512];
+            message.spokes.push(spoke);
+        }
+        message.write_to_bytes().expect("serializable")
+    }
+
+    fn fixture() -> (Arc<Shared>, SpokeStream, VecDeque<Vec<u8>>) {
+        let (shared, _echo_rx) = Shared::new(controls());
+        let legend = default_legend(&TargetMode::None, 0, false, 16);
+        (
+            Arc::new(shared),
+            SpokeStream::new(1440, &legend),
+            VecDeque::new(),
+        )
+    }
+
+    #[test]
+    fn a_message_that_is_not_a_radar_message_is_dropped() {
+        let (shared, mut stream, mut queue) = fixture();
+        enqueue(
+            b"\xff\xff not protobuf",
+            &shared,
+            &mut stream,
+            &mut queue,
+            "t",
+        );
+        assert!(queue.is_empty());
+    }
+
+    #[test]
+    fn spokes_without_a_range_are_skipped() {
+        let (shared, mut stream, mut queue) = fixture();
+        // Only the third spoke says how far its samples reach, and a spoke is
+        // emitted once the following one bounds it — so nothing comes out.
+        enqueue(
+            &message([(0, 0), (1, 0), (2, 3704)]),
+            &shared,
+            &mut stream,
+            &mut queue,
+            "t",
+        );
+        assert!(queue.is_empty());
+
+        enqueue(&message([(3, 3704)]), &shared, &mut stream, &mut queue, "t");
+        assert_eq!(queue.len(), 1, "the two ranged spokes bound one xHD spoke");
+    }
+
+    #[test]
+    fn a_queue_that_runs_away_is_trimmed_to_the_newest_spokes() {
+        let (shared, mut stream, mut queue) = fixture();
+        let batch = message((0..1440).map(|angle| (angle, 3704)));
+
+        for _ in 0..3 {
+            enqueue(&batch, &shared, &mut stream, &mut queue, "t");
+        }
+
+        assert_eq!(queue.len(), QUEUE_MAX);
+    }
+}

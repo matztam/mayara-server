@@ -18,7 +18,7 @@ use crate::radar::settings::{ControlId, ControlValue};
 use crate::radar::{Power, RadarError};
 
 use super::convert::nearest_xhd_range;
-use super::{GAIN_MODE_AUTO, SEA_MODE_AUTO, SEA_MODE_MANUAL, Shared, packet_u8};
+use super::{GAIN_MODE_AUTO, SEA_MODE_AUTO, SEA_MODE_MANUAL, SEA_MODE_OFF, Shared, packet_u8};
 
 /// Rain clutter gain used when the plotter switches rain filtering on without
 /// saying how much. The xHD protocol has a separate on/off and gain command,
@@ -90,7 +90,10 @@ fn handle(datagram: &[u8], shared: &Shared, reply_tx: &tokio::sync::mpsc::Sender
     }
     let message_id = u32::from_le_bytes(datagram[0..4].try_into().unwrap());
     let payload_len = u32::from_le_bytes(datagram[4..8].try_into().unwrap()) as usize;
-    let Some(payload) = datagram.get(GMN_HEADER_LEN..GMN_HEADER_LEN + payload_len) else {
+    let Some(payload) = GMN_HEADER_LEN
+        .checked_add(payload_len)
+        .and_then(|end| datagram.get(GMN_HEADER_LEN..end))
+    else {
         log::warn!("Garmin xHD command: 0x{message_id:04x} truncated");
         return;
     };
@@ -127,10 +130,16 @@ fn handle(datagram: &[u8], shared: &Shared, reply_tx: &tokio::sync::mpsc::Sender
         MSG_RANGE_A_GAIN_MODE => byte.map(|mode| auto(ControlId::Gain, mode == GAIN_MODE_AUTO)),
         MSG_RANGE_A_GAIN => percent().map(|p| manual(ControlId::Gain, p)),
 
-        MSG_RANGE_A_SEA_MODE => byte.map(|mode| match mode {
-            SEA_MODE_AUTO => auto(ControlId::Sea, true),
-            SEA_MODE_MANUAL => auto(ControlId::Sea, false),
-            _ => manual(ControlId::Sea, 0.0),
+        MSG_RANGE_A_SEA_MODE => byte.and_then(|mode| match mode {
+            SEA_MODE_AUTO => Some(auto(ControlId::Sea, true)),
+            SEA_MODE_MANUAL => Some(auto(ControlId::Sea, false)),
+            SEA_MODE_OFF => Some(manual(ControlId::Sea, 0.0)),
+            // Switching sea clutter off is not the safe reading of a mode we
+            // do not know: it is the one that quietly changes the picture.
+            _ => {
+                log::warn!("Garmin xHD command: unknown sea clutter mode {mode}");
+                None
+            }
         }),
         MSG_RANGE_A_SEA_GAIN => percent().map(|p| manual(ControlId::Sea, p)),
 
@@ -156,8 +165,10 @@ fn handle(datagram: &[u8], shared: &Shared, reply_tx: &tokio::sync::mpsc::Sender
         }
     };
 
+    // Either the payload was too short for the value this message carries, or
+    // it held a value we do not understand — which is logged where it is seen.
     let Some(control) = control else {
-        log::warn!("Garmin xHD command: 0x{message_id:04x} payload too short");
+        log::warn!("Garmin xHD command: 0x{message_id:04x} carries nothing we can act on");
         return;
     };
 
@@ -279,6 +290,18 @@ mod tests {
         )
         .expect("control change");
         assert_eq!(auto.auto, Some(true));
+
+        let manual = command(
+            &shared,
+            &packet_u8(MSG_RANGE_A_SEA_MODE, super::SEA_MODE_MANUAL),
+        )
+        .expect("control change");
+        assert_eq!(manual.auto, Some(false));
+        assert!(manual.value.is_none(), "manual must not change the value");
+
+        // A mode we do not know must not be read as "switch sea clutter off",
+        // which would quietly change the picture.
+        assert!(command(&shared, &packet_u8(MSG_RANGE_A_SEA_MODE, 9)).is_none());
     }
 
     #[test]

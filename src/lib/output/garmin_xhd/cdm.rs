@@ -23,8 +23,32 @@ const PRODUCT_ID_XHD: u16 = 0x06d0;
 const PRODUCT_SUBTYPE: u8 = 5;
 const SYC_GROUP_ID: u8 = 6;
 const SERVICE_CLASS: u8 = 1;
+const SERVICE_INSTANCE: u8 = 0;
 const SERVICE_VERSION: u16 = 2;
 const SERVICE_ID: u32 = 0x08d4_0aa0;
+
+/// `version_marker`: this is a V2 heartbeat, the only version mayara's own
+/// discovery accepts and the only one seen in captures.
+const VERSION_MARKER: u8 = 2;
+
+/// `simulator_mode`: zero for a real radar rather than a simulated one. The
+/// emulated radar claims to be real, because to the plotter it is.
+const SIMULATOR_MODE: u8 = 0;
+
+/// Byte at +07, constant in every capture and of unknown meaning.
+const CONSTANT_07: u8 = 1;
+
+/// The announcement lists the services the device offers; a radar offers one.
+const SERVICE_COUNT: u8 = 1;
+
+/// Tag and length of the sequence counter in the serialized tail.
+const TAIL_TAG_SEQUENCE: u8 = 1;
+const TAIL_LEN_SEQUENCE: u8 = 4;
+
+/// Padding runs: one byte after the version marker, three before the service
+/// entries.
+const PAD_AFTER_VERSION: [u8; 1] = [0];
+const PAD_BEFORE_SERVICES: [u8; 3] = [0; 3];
 
 /// Heartbeats sent at the fast rate before settling into the slow one.
 const FAST_HEARTBEATS: u32 = 30;
@@ -32,27 +56,28 @@ const FAST_INTERVAL: Duration = Duration::from_secs(1);
 const SLOW_INTERVAL: Duration = Duration::from_secs(5);
 
 /// Build the `0x038e` announcement. The layout is documented in
-/// `research/garmin/discovery-handshake.md`.
+/// `research/garmin/discovery-handshake.md` and in
+/// `brand::garmin::discovery`, which parses it.
 fn heartbeat(sequence: u32) -> Vec<u8> {
     let mut body = Vec::with_capacity(26);
-    body.push(2); // version marker: V2 heartbeat
-    body.push(0); // padding
+    body.push(VERSION_MARKER);
+    body.extend_from_slice(&PAD_AFTER_VERSION);
     body.extend_from_slice(&PRODUCT_ID_XHD.to_le_bytes());
-    body.push(0); // simulator mode: a real radar
+    body.push(SIMULATOR_MODE);
     body.push(PRODUCT_SUBTYPE);
     body.push(SYC_GROUP_ID);
-    body.push(1); // constant
-    body.push(1); // one service follows
-    body.extend_from_slice(&[0u8; 3]); // padding
+    body.push(CONSTANT_07);
+    body.push(SERVICE_COUNT);
+    body.extend_from_slice(&PAD_BEFORE_SERVICES);
 
     body.push(SERVICE_CLASS);
-    body.push(0); // instance
+    body.push(SERVICE_INSTANCE);
     body.extend_from_slice(&SERVICE_VERSION.to_le_bytes());
     body.extend_from_slice(&SERVICE_ID.to_le_bytes());
 
     // Serialized tail: one tagged field holding the sequence counter.
-    body.push(1); // tag
-    body.push(4); // length
+    body.push(TAIL_TAG_SEQUENCE);
+    body.push(TAIL_LEN_SEQUENCE);
     body.extend_from_slice(&sequence.to_le_bytes());
 
     super::packet(MSG_CDM_HEARTBEAT, &body)

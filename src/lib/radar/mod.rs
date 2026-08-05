@@ -791,7 +791,7 @@ impl RadarInfo {
     /// when compiled in, the Garmin xHD bridge. Called by each brand once the
     /// radar has been registered with [`SharedRadars`].
     #[cfg_attr(not(feature = "garmin-xhd-output"), allow(unused_variables))]
-    pub fn start_outputs(&self, radars: &SharedRadars, subsys: &SubsystemHandle) {
+    pub(crate) fn start_outputs(&self, radars: &SharedRadars, subsys: &SubsystemHandle) {
         if self.output {
             let info_clone2 = self.clone();
 
