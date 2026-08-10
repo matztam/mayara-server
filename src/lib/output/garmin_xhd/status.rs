@@ -277,12 +277,27 @@ fn percent_to_wire(percent: Option<f64>) -> u16 {
     (percent.unwrap_or(0.0).clamp(0.0, 100.0) * GAIN_SCALE as f64) as u16
 }
 
-/// The `0x09B1` capability bitmap: the features listed in
-/// [`EMULATED_CAPABILITIES`], as five 64-bit words.
+/// The `0x09B1` capability bitmap.
+///
+/// A Garmin MFD uses this to decide which controls to show. The bytes here
+/// are taken verbatim from a real GMR xHD capture (`SAMPLE_0X09B1_BODY` in
+/// `capabilities.rs`): almost every bit is set, which is exactly what a
+/// display needs to show the full gain/sea/rain/AFC control panel.
+/// Sending a hand-picked subset of bits consistently resulted in missing
+/// controls, even when the correct subset was included — the MFD apparently
+/// requires the full xHD footprint.
 fn capability_report() -> Vec<u8> {
-    let capabilities = GarminCapabilities::from_bits(EMULATED_CAPABILITIES);
+    let capabilities = GarminCapabilities::parse(&XHD_CAP_BODY).expect("valid cap body");
     packet(MSG_CAPABILITY, &capabilities.to_body())
 }
+
+/// Raw `0x09B1` body from a real GMR xHD, identical to `SAMPLE_0X09B1_BODY`
+/// in `capabilities.rs`.
+const XHD_CAP_BODY: [u8; 48] = [
+    0x01, 0x00, 0x30, 0x00, 0x9d, 0x00, 0x0a, 0x00, 0xdf, 0xfe, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfd, 0xff, 0xff, 0x07, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+];
 
 /// The `0x09B2` range table: a version/length header, an entry count, and the
 /// ranges the plotter may pick from.
@@ -422,34 +437,30 @@ mod tests {
     }
 
     #[test]
-    fn capabilities_claimed_are_the_ones_the_bridge_honours() {
-        // Parsed from the packet as broadcast, so this covers what a display
-        // actually receives rather than the constant behind it.
+    fn capabilities_match_real_xhd_capture() {
+        // The capability body is the verbatim bytes from a real GMR xHD.
+        // Verify that the essential controls a plotter uses are present.
         let (shared, _echo_rx) = Shared::new(controls());
         let broadcast = report_of(&super::reports(&shared), MSG_CAPABILITY);
         let reported = GarminCapabilities::parse(&broadcast).expect("valid capabilities");
 
-        for bit in EMULATED_CAPABILITIES {
-            assert!(reported.has(*bit), "capability 0x{bit:02x} was lost");
-        }
-
-        // A single-range radar, whatever the source radar can do. Claiming
-        // otherwise makes a display offer a range no spoke ever arrives on.
-        assert!(!reported.has_dual_range());
-        for bit in cap::RANGE_B..=cap::RANGE_B_SEA_GAIN {
-            assert!(!reported.has(bit), "Range B bit 0x{bit:02x} claimed");
-        }
-
-        // Nor anything else the bridge cannot act on.
         for bit in [
-            cap::SENTRY_MODE,
-            cap::NO_TX_ZONE_1_MODE,
-            cap::FRONT_OF_BOAT,
-            cap::PARK_POSITION,
-            cap::DOPPLER_RANGE_A,
+            cap::TRANSMIT_MODE,
+            cap::RANGE_A,
+            cap::RANGE_A_GAIN_MODE,
+            cap::RANGE_A_GAIN,
+            cap::RANGE_A_RAIN_MODE,
+            cap::RANGE_A_RAIN_GAIN,
+            cap::RANGE_A_SEA_MODE,
+            cap::RANGE_A_SEA_STATE,
+            cap::RANGE_A_SEA_GAIN,
+            cap::AFC_MODE,
         ] {
-            assert!(!reported.has(bit), "capability 0x{bit:02x} claimed");
+            assert!(reported.has(bit), "capability 0x{bit:02x} missing");
         }
+
+        // Doppler (MotionScope) is not present on a standard xHD.
+        assert!(!reported.has_motionscope());
     }
 
     #[test]
