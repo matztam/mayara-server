@@ -57,22 +57,27 @@ pub(super) fn nearest_xhd_range(meters: u32) -> u32 {
 
 /// Maps mayara legend indices to xHD echo strength.
 ///
-/// Legend indices below `pixel_colors` are echo strengths on a scale the radar
-/// chose, and scale linearly onto the xHD's 0..=255. Above that sit the
-/// Doppler classes and the rendering-only entries (target history, static
-/// background) that a spoke straight off a radar never contains.
+/// Legend indices from `low_return` up to `pixel_colors - 1` are echo
+/// strengths and are scaled linearly onto the xHD's 0..=255. Indices
+/// below `low_return` are never populated by the radar's wire-to-legend
+/// conversion (e.g. Furuno DRS applies an echo floor) and map to 0.
+/// Above `pixel_colors` sit the Doppler classes and the rendering-only
+/// entries (target history, static background) that a spoke straight
+/// off a radar never contains.
 fn intensity_table(legend: &Legend) -> [u8; 256] {
     let mut table = [0u8; 256];
 
-    let top = legend.pixel_colors.saturating_sub(1);
-    if top > 0 {
-        for (index, entry) in table
-            .iter_mut()
-            .enumerate()
-            .take(legend.pixel_colors as usize)
-        {
-            *entry = (index * u8::MAX as usize / top as usize) as u8;
+    let floor = legend.low_return as usize;
+    let top = legend.pixel_colors.saturating_sub(1) as usize;
+    let span = top.saturating_sub(floor);
+    if span > 0 {
+        for index in floor..=top {
+            let entry = &mut table[index];
+            *entry = ((index - floor) * u8::MAX as usize / span) as u8;
         }
+    } else if top > 0 {
+        // floor >= top: degenerate legend, just mark top as full strength
+        table[top] = u8::MAX;
     }
 
     // An xHD has no Doppler, so a moving target has to be shown as an echo.
@@ -84,7 +89,7 @@ fn intensity_table(legend: &Legend) -> [u8; 256] {
         (legend.doppler_receding, u8::MAX),
         (
             legend.doppler_rain,
-            table[legend.medium_return.min(top) as usize],
+            table[legend.medium_return.min(top as u8) as usize],
         ),
     ];
     for (band, intensity) in bands {

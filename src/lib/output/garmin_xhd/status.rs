@@ -42,14 +42,25 @@ const REPORT_INTERVAL: Duration = Duration::from_secs(1);
 /// single-range and has no Doppler, is `capabilities::LEGACY_HD_BITS`; this is
 /// that set less the features the bridge does not forward.
 const EMULATED_CAPABILITIES: &[u32] = &[
+    cap::RANGE_MODE,
+    cap::RANGE_MODE_TOGGLE,
+    cap::RPM_MODE,
     cap::TRANSMIT_MODE,
+    cap::RESTORE_DEFAULTS,
+    cap::DITHER_MODE,
+    cap::NOISE_BLANKER_MODE,
     cap::RANGE_A,
     cap::RANGE_A_GAIN_MODE,
     cap::RANGE_A_GAIN,
+    cap::RANGE_A_RAIN_CONTROL,
     cap::RANGE_A_RAIN_MODE,
     cap::RANGE_A_RAIN_GAIN,
     cap::RANGE_A_SEA_MODE,
+    cap::RANGE_A_SEA_STATE,
     cap::RANGE_A_SEA_GAIN,
+    cap::AFC_MODE,
+    cap::AFC_SETTING,
+    cap::AFC_COARSE,
 ];
 
 // Reports a real xHD sends whose meaning is not documented anywhere, and for
@@ -433,7 +444,6 @@ mod tests {
         for bit in [
             cap::SENTRY_MODE,
             cap::NO_TX_ZONE_1_MODE,
-            cap::RPM_MODE,
             cap::FRONT_OF_BOAT,
             cap::PARK_POSITION,
             cap::DOPPLER_RANGE_A,

@@ -1232,6 +1232,7 @@ impl FurunoReportReceiver {
                 low_power,
             );
             if low_power {
+                self.common.info.set_echo_floor(ECHO_FLOOR as u8);
                 log::info!(
                     "{}: using gamma echo curve for low-power radar",
                     self.common.key

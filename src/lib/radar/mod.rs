@@ -742,6 +742,17 @@ impl RadarInfo {
         self.pixel_values = pixel_values;
     }
 
+    /// Override the lowest echo-bearing legend index.
+    ///
+    /// Some radars (e.g. Furuno DRS in low-power mode) apply a floor before
+    /// mapping wire bytes to legend indices, so indices below the floor are
+    /// never emitted. Callers that know this floor set it here so that
+    /// downstream consumers (e.g. the xHD output bridge) can scale the
+    /// intensity range from the floor up rather than from 0.
+    pub(crate) fn set_echo_floor(&mut self, floor: u8) {
+        self.legend.low_return = floor;
+    }
+
     fn full_rotation(&mut self) -> u32 {
         let now = Instant::now();
         let diff: Duration = now - self.rotation_timestamp;
