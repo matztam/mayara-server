@@ -210,10 +210,12 @@ fn reports(shared: &Shared) -> Vec<Vec<u8>> {
         SEA_MODE_OFF
     };
 
-    // Rain filtering is on or off on an xHD, with no automatic mode; a radar
-    // set to filter nothing is one with rain filtering switched off.
+    // Rain filtering is on or off on an xHD, with no automatic mode. mayara's
+    // "auto" state (radar decides) maps to xHD "off"; the user can reach a
+    // hard 0% via the gain slider if they want to force it off manually.
+    let rain_auto = shared.control_auto(ControlId::Rain);
     let rain = percent_to_wire(shared.control(ControlId::Rain));
-    let rain_mode = u8::from(rain > 0);
+    let rain_mode = u8::from(!rain_auto && rain > 0);
 
     vec![
         packet_u8(MSG_SCANNER_STATE, scanner_state),
@@ -408,6 +410,16 @@ mod tests {
         assert_eq!(
             report_of(&reports, MSG_RANGE_A_RAIN_GAIN),
             4000u16.to_le_bytes()
+        );
+
+        // Auto mode maps to xHD "off" regardless of the underlying level.
+        shared
+            .controls
+            .set(&ControlId::Rain, 40., Some(true))
+            .unwrap();
+        assert_eq!(
+            report_of(&super::reports(&shared), MSG_RANGE_A_RAIN_MODE),
+            [0]
         );
     }
 
