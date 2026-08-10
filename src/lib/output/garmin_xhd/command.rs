@@ -145,19 +145,20 @@ fn handle(datagram: &[u8], shared: &Shared, reply_tx: &tokio::sync::mpsc::Sender
         }),
         MSG_RANGE_A_SEA_GAIN => percent().map(|p| manual(ControlId::Sea, p)),
 
-        // Rain filtering has no automatic mode on an xHD: it is off, or it is
-        // set to a level. Switching it on before the user has picked a level
-        // has to mean something, so it means half.
+        // Rain filtering has no automatic mode on an xHD: it is either off or
+        // set to a level. "Off" maps to mayara's automatic mode (let the radar
+        // decide); turning it on restores the last level or picks a default.
+        // A hard 0 % can still be sent via the gain slider to truly disable it.
         MSG_RANGE_A_RAIN_MODE => byte.map(|mode| {
-            let percent = if mode != 0 {
-                shared
+            if mode == 0 {
+                auto(ControlId::Rain, true)
+            } else {
+                let percent = shared
                     .control(ControlId::Rain)
                     .filter(|&v| v > 0.0)
-                    .unwrap_or(RAIN_DEFAULT_PERCENT)
-            } else {
-                0.0
-            };
-            manual(ControlId::Rain, percent)
+                    .unwrap_or(RAIN_DEFAULT_PERCENT);
+                manual(ControlId::Rain, percent)
+            }
         }),
         MSG_RANGE_A_RAIN_GAIN => percent().map(|p| manual(ControlId::Rain, p)),
 
@@ -318,8 +319,10 @@ mod tests {
         let on = command(&shared, &packet_u8(MSG_RANGE_A_RAIN_MODE, 1)).expect("control change");
         assert_eq!(on.as_f64().unwrap(), 20.0, "a level already set is kept");
 
+        // "Off" on the xHD maps to auto in mayara; 0 % is reached via the gain slider.
         let off = command(&shared, &packet_u8(MSG_RANGE_A_RAIN_MODE, 0)).expect("control change");
-        assert_eq!(off.as_f64().unwrap(), 0.0);
+        assert_eq!(off.auto, Some(true));
+        assert!(off.value.is_none());
     }
 
     #[test]
