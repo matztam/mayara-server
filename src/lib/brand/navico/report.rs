@@ -1538,6 +1538,7 @@ mod tests {
             pixel_colors: 16,
             pixels: Vec::new(),
             static_background: None,
+            wire_gamma: None,
         }
     }
 

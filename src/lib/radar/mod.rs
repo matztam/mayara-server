@@ -257,6 +257,11 @@ pub struct Legend {
     pub pixels: Vec<Lookup>,
     /// Color for static background in Static ARPA mode (light grey)
     pub static_background: Option<u8>,
+    /// Gamma exponent applied by the radar's wire-to-legend mapping, if any.
+    /// A Furuno DRS in low-power mode uses `1/18` (i.e. stores `18.0` here).
+    /// The xHD output bridge applies the inverse (`^gamma`) to recover dynamic
+    /// range before scaling to xHD echo strength.
+    pub wire_gamma: Option<f64>,
 }
 
 /// A geographic position expressed in degrees latitude and longitude.
@@ -751,6 +756,10 @@ impl RadarInfo {
     /// intensity range from the floor up rather than from 0.
     pub(crate) fn set_echo_floor(&mut self, floor: u8) {
         self.legend.low_return = floor;
+    }
+
+    pub(crate) fn set_wire_gamma(&mut self, gamma: f64) {
+        self.legend.wire_gamma = Some(gamma);
     }
 
     fn full_rotation(&mut self) -> u32 {
@@ -1348,6 +1357,7 @@ pub(crate) fn default_legend(
         medium_return: 0,
         low_return: 0,
         static_background: None,
+        wire_gamma: None,
     };
 
     let rain_levels: u8 = if has_rain_class && doppler_levels > 0 {

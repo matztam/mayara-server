@@ -1526,6 +1526,7 @@ mod tests {
             medium_return: 0,
             low_return: 0,
             static_background: None,
+            wire_gamma: None,
         }
     }
 

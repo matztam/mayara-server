@@ -72,8 +72,14 @@ fn intensity_table(legend: &Legend) -> [u8; 256] {
     let span = top.saturating_sub(floor);
     if span > 0 {
         for index in floor..=top {
-            let entry = &mut table[index];
-            *entry = ((index - floor) * u8::MAX as usize / span) as u8;
+            let normalized = (index - floor) as f64 / span as f64;
+            // If the radar applied a gamma curve when encoding wire bytes to
+            // legend indices, undo it here so the full dynamic range is used.
+            let corrected = match legend.wire_gamma {
+                Some(g) => normalized.powf(g),
+                None => normalized,
+            };
+            table[index] = (corrected * u8::MAX as f64).round() as u8;
         }
     } else if top > 0 {
         // floor >= top: degenerate legend, just mark top as full strength

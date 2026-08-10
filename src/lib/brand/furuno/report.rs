@@ -1233,6 +1233,7 @@ impl FurunoReportReceiver {
             );
             if low_power {
                 self.common.info.set_echo_floor(ECHO_FLOOR as u8);
+                self.common.info.set_wire_gamma(18.0);
                 log::info!(
                     "{}: using gamma echo curve for low-power radar",
                     self.common.key
@@ -2236,6 +2237,7 @@ mod tests {
             medium_return: 0,
             low_return: 0,
             static_background: None,
+            wire_gamma: None,
         }
     }
 
@@ -2305,6 +2307,7 @@ mod tests {
             medium_return: 0,
             low_return: 0,
             static_background: None,
+            wire_gamma: None,
         };
         let lut = FurunoReportReceiver::wire_to_legend(&legend, DopplerWireMode::On, false);
         // Each step of 4 in the raw byte moves one slot in the legend.
