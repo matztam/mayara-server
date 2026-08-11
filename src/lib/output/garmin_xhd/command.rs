@@ -120,13 +120,8 @@ fn handle(datagram: &[u8], shared: &Shared, reply_tx: &tokio::sync::mpsc::Sender
         }),
 
         MSG_RANGE_A => long.map(|meters| {
-            // The plotter picks from the xHD range table, but the value it
-            // sends may be off by one meter from what we offered. Round to
-            // the nearest xHD entry so the source radar always gets a value
-            // it recognises.
-            let snapped = nearest_xhd_range(meters);
-            shared.set_pending_range(snapped);
-            ControlValue::new(ControlId::Range, json!(snapped))
+            shared.set_pending_range(nearest_xhd_range(meters));
+            ControlValue::new(ControlId::Range, json!(meters))
         }),
 
         MSG_RANGE_A_GAIN_MODE => byte.map(|mode| auto(ControlId::Gain, mode == GAIN_MODE_AUTO)),
